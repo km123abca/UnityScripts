@@ -10,9 +10,14 @@ public class LaserLife : MonoBehaviour
 	public int numChildren;
 	int spawnedChildren;
 	public float lifeTime=4f;
+	GameObject parentx;
 	void Start () 
 		{
 		
+		}
+	void GetParent(GameObject p)
+		{
+			parentx=p;
 		}
 	
 	
@@ -23,6 +28,7 @@ public class LaserLife : MonoBehaviour
 				  if(Time.time > i*spawnInterval && spawnedChildren < i+1 )
 				  			{
 				  				GameObject g=Instantiate(lchild,transform.position,Quaternion.identity);
+				  				g.SendMessage("GetParent",parentx);
 				  				g.transform.SetParent(transform);
 				  				g.transform.localPosition=Vector2.zero+new Vector2(0f,yseperation*i);
 				  				g.transform.localRotation=Quaternion.Euler(0,0,90);

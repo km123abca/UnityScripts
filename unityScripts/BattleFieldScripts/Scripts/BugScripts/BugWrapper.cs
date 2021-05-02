@@ -11,10 +11,10 @@ public class BugWrapper : MonoBehaviour
 	public GameObject bulletx,fireProjectile;
 	public float attackRotationSpeed=5f;
 	bool doingBulletShower;
-	public float maxBulletShowerTime=5f;
+	public float maxBulletShowerTime=5f,maxLaserShowerTime=5f;
 	float bulletShowerTime,angleCounter;
-	public float maxHalfAngle=20f;
-	public float angleInterval=2f;
+	public float maxHalfAngle=20f,maxHalfAngle_laser=30f;
+	public float angleInterval=2f,angleInterval_laser=0.1f;
 	float presentAngleDiff=0f;
 	public float quickBulletGap=0.5f;
 	float quickBulletTimer=0f;
@@ -80,7 +80,9 @@ public class BugWrapper : MonoBehaviour
 	public void ShootLaser()
 		{
 			GameObject go=Instantiate(Laserx,bulletSpawnPos.transform.position,Quaternion.identity);
+			go.SendMessage("GetParent",gameObject);
 			go.transform.SetParent(transform);
+			go.transform.rotation=transform.rotation;
 		}
 	public void InitiateLaserAttack()
 		{
@@ -102,6 +104,7 @@ public class BugWrapper : MonoBehaviour
 					return;
 				}
 			FocusOnTarget();
+			// alignmentReadyForShower=true;
 			if(!alignmentReadyForShower && IsFacingTarget())
 				{
 					alignmentReadyForShower=true;
@@ -120,7 +123,7 @@ public class BugWrapper : MonoBehaviour
 
 
 			bulletShowerTime+=Time.deltaTime;
-			if(bulletShowerTime > maxBulletShowerTime)
+			if(bulletShowerTime > maxLaserShowerTime)
 				{
 					bulletShowerTime=0f;
 					//laser specific
@@ -140,15 +143,15 @@ public class BugWrapper : MonoBehaviour
 				ShootLaser();
 				laserShot=true;
 				}
-			transform.rotation= Quaternion.Euler(0,0,presentAngleDiff)*transform.rotation;
-			if ((angleInterval > 0 && presentAngleDiff > maxHalfAngle) 
+			transform.rotation= Quaternion.Euler(0,0,angleInterval_laser)*transform.rotation;
+			if ((angleInterval_laser > 0 && presentAngleDiff > maxHalfAngle_laser) 
 				||
-				(angleInterval < 0 && presentAngleDiff < -maxHalfAngle)
+				(angleInterval_laser < 0 && presentAngleDiff < -maxHalfAngle_laser)
 			   )
 				{				
-					angleInterval*=-1;
+					angleInterval_laser*=-1;
 				}
-			presentAngleDiff+=angleInterval;
+			presentAngleDiff+=angleInterval_laser;
 
 			/*
 			quickBulletTimer+=Time.deltaTime;
